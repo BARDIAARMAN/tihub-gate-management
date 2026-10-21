@@ -1,0 +1,201 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TIHUB | کنترل گیت بارگیری</title><style>
+:root{--bg:#081421;--card:#102438;--line:#29465c;--mint:#39dfad;--yellow:#ffd05c;--red:#ff6677;--text:#e9f5fc}*{box-sizing:border-box}body{margin:0;background:linear-gradient(125deg,#06111d,#102c3b);color:var(--text);font-family:Tahoma,Arial,sans-serif}header{padding:22px 3%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #244254}h1{margin:0;font-size:25px}small,.muted{color:#a8c3d0}main{padding:22px 3%;max-width:1600px;margin:auto}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.stat,.card{background:#102438ee;border:1px solid #27485c;border-radius:16px;padding:18px}.stat strong{display:block;font-size:27px;margin-top:10px;color:var(--mint)}.layout{display:grid;grid-template-columns:1.15fr 1fr;gap:18px;margin-top:18px}.card h2{font-size:17px;margin:0 0 18px}.warehouse{position:relative;min-height:590px;background:radial-gradient(ellipse,#1a3948,#0b1d2c);border:2px solid #426075;border-radius:14px;display:grid;grid-template-columns:140px 1fr 140px;gap:12px;padding:18px}.lane{display:flex;flex-direction:column;justify-content:space-around;gap:9px}.floor{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;text-align:center;color:#6f9ba9;border:2px dashed #315365;border-radius:15px}.gate{cursor:pointer;position:relative;min-height:75px;background:#163346;border:1px solid #42657a;border-radius:11px;color:white;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:.2s}.gate:hover{transform:scale(1.045);border-color:#fff}.gate.ready{border-color:var(--mint);background:#123c3b}.gate.warning{border-color:var(--yellow);background:#544525}.gate.danger{border-color:var(--red);background:#552b39}.gate.truck{border-color:#79bfff;background:#193955}.gate .icon{font-size:25px}.gate .caption{font-size:11px}.gate .clock{font-size:11px;font-weight:bold}.gate .number{position:absolute;top:4px;right:6px;font-size:10px;color:#bbd3e1}.board{width:100%;border-collapse:collapse;font-size:12px;text-align:center}th,td{padding:11px 7px;border-bottom:1px solid #2a4556}th{color:#9abccf;background:#173348}tr.danger{background:#552735;color:#ffb3b9}tr.warning{background:#4c4029;color:#ffe2a1}tr.ready{color:#8bffcf}tr.truck{color:#9dd0ff}.scroll{max-height:520px;overflow:auto}input,button{font-family:inherit}input{width:100%;background:#0b1b2a;color:#fff;border:1px solid #406078;border-radius:9px;padding:12px;outline:none}label{display:block;font-size:12px;color:#b4cbd7;margin-bottom:6px}.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:bold;background:#31536a;color:#fff}button.primary{background:#1bc697;color:#052b29}button.blue{background:#377db5}button:disabled{opacity:.35;cursor:not-allowed}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}.tag{display:inline-block;border-radius:8px;padding:6px 10px;background:#214055;color:#b9d5e2;font-size:12px}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.note{line-height:2;font-size:12px;color:#adc7d4}.footer{padding:20px;text-align:center;color:#82a5b5}#toast{position:fixed;bottom:25px;left:25px;background:#244d60;padding:14px 22px;border-radius:10px;display:none;z-index:5}@media(max-width:1000px){.layout,.bottom{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.warehouse{grid-template-columns:105px 1fr 105px;padding:7px;gap:5px}.gate{min-height:72px}.formgrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}header{display:block}}
+.tabs{display:flex;gap:10px;margin:18px 0 0;flex-wrap:wrap}.tab{background:#17354b;border:1px solid #3a6478;padding:14px 22px}.tab.active{background:#19c69b;color:#052c29}.panel-hidden{display:none!important}.supply-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.supply-grid .stat strong{font-size:24px}.ack{background:#19c69b;color:#052c29;padding:8px 12px}.pill{font-size:11px;padding:5px 8px;border-radius:7px;background:#3a5266;white-space:nowrap}.pill.pending{background:#80522d;color:#ffdf9d}.pill.done{background:#17594b;color:#a9ffe3}.card.full{margin-top:18px}.board td{vertical-align:middle}@media(max-width:750px){.supply-grid{grid-template-columns:repeat(2,1fr)}}
+</style><style>
+#loginOverlay{position:fixed;inset:0;z-index:100;background:#081421ee;display:flex;align-items:center;justify-content:center;padding:20px}#loginOverlay .loginCard{width:min(440px,100%);background:#102438;border:1px solid #426075;border-radius:18px;padding:28px}#loginOverlay select{width:100%;padding:12px;background:#0b1b2a;color:#fff;border:1px solid #406078;border-radius:9px;margin:10px 0 15px}#loginOverlay button{width:100%}#sessionActions{display:flex;gap:8px;align-items:center}.roleTag{color:#39dfad}.selectedGate{outline:2px solid #39dfad;outline-offset:2px}#statusMessage{color:#ffb3b9;font-size:12px;margin-top:10px}#history td{white-space:nowrap}.card{min-width:0}@media(max-width:750px){.layout{grid-template-columns:1fr}.warehouse{min-height:430px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}header{gap:10px}#sessionActions{margin-top:12px}}
+</style>
+<style>
+/* Separate responsive manager application */
+#managerApp{display:none;max-width:560px;margin:auto;min-height:100vh;background:#08121e;padding-bottom:76px}
+body.manager-mode>header,body.manager-mode>main,body.manager-mode>.footer{display:none}
+body.manager-mode #managerApp{display:block}
+.mhead{padding:25px 18px;background:linear-gradient(145deg,#17374b,#0c1c2b);border-bottom:1px solid #294056}
+.mbrand{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mbrand strong{font-size:25px;color:#39ddb1}
+.mhead h2{margin:22px 0 6px;font-size:21px}
+.msmall{font-size:12px;color:#a6b7c7}
+.mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:15px}
+.mstat{background:#122234;border:1px solid #294056;border-radius:14px;padding:15px 7px;text-align:center}
+.mstat b{display:block;font-size:27px;color:#39ddb1;margin-bottom:6px}
+.mstat small{font-size:11px;color:#bdcbd6}
+.msection{padding:8px 15px 12px}
+.msection h3{font-size:16px;margin:8px 0 12px}
+.mfilters{display:flex;gap:8px;overflow:auto;padding:0 0 12px}
+.mfilters button{flex-shrink:0;padding:9px 13px;border-radius:30px;background:#172c40;border:1px solid #36566d;font-size:11px}
+.mfilters button.on{background:#39ddb1;color:#062824}
+.mrow{display:grid;grid-template-columns:52px minmax(0,1fr) 80px 77px;gap:5px;align-items:center;padding:15px 8px;background:#102132;border-bottom:1px solid #294056;cursor:pointer}
+.mrow:first-child{border-radius:12px 12px 0 0}.mrow:last-child{border-radius:0 0 12px 12px}
+.mrow .g{font-size:16px;font-weight:900;direction:ltr}
+.mrow .city{font-size:13px;font-weight:bold;overflow-wrap:anywhere}
+.mrow small{display:block;font-size:10px;color:#a6b7c7;margin-top:5px}
+.mrow .wait{direction:ltr;text-align:center;font-size:15px;font-weight:bold}
+.mrow .state{border-radius:7px;text-align:center;font-size:10px;padding:9px 3px;background:#20384a}
+.mrow.late .wait,.mrow.late .g{color:#ff526b}.mrow.late .state{background:#522a39;color:#ffabb7}
+.mrow.ready .wait{color:#ffc75a}.mrow.truck .state{color:#39ddb1}
+.malert{margin:0 15px 12px;padding:15px;border-radius:13px;background:#452431;border:1px solid #a83d52;color:#ffced6;font-size:12px;line-height:1.9}
+.mfoot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(560px,100%);background:#142638;border-top:1px solid #355166;display:flex;justify-content:space-around;padding:9px 0 calc(10px + env(safe-area-inset-bottom))}
+.mfoot button{background:transparent;color:#a9bfd0;font-size:12px;padding:7px}.mfoot button.on{color:#39ddb1}
+.mdetail{display:none;position:fixed;inset:0;background:#000b;z-index:80;align-items:flex-end;justify-content:center}
+.mdetail.show{display:flex}
+.msheet{background:#172b3c;border-radius:20px 20px 0 0;border:1px solid #476074;padding:20px;width:min(560px,100%);line-height:2}
+.msheet button{width:100%;background:#39ddb1;color:#062824;margin-top:14px}
+#managerHistory{font-size:12px;line-height:2}
+@media(max-width:380px){.mrow{grid-template-columns:43px minmax(0,1fr) 65px 65px}.mrow .wait{font-size:12px}}
+</style>
+</head><body><header><div><h1>🚚 TIHUB | اتاق کنترل گیت‌های بارگیری</h1><small>طراحی و توسعه: واحد برنامه‌ریزی TIHUB</small></div><div><span class="tag" id="now"></span> <span class="tag">● داده زنده از Supabase</span> <span id="sessionActions"><span class="tag roleTag" id="roleLabel"></span><button onclick="logout()">خروج</button></span></div></header><main><div id="opsPanel"><section class="stats"><div class="stat">کل گیت‌ها<strong id="total">۱۲</strong></div><div class="stat">گیت خالی<strong id="empty">۰</strong></div><div class="stat">آماده بارگیری<strong id="ready">۰</strong></div><div class="stat">کامیون مستقر<strong id="occupied">۰</strong></div><div class="stat">میانگین انتظار جاری<strong id="average">۰۰:۰۰</strong></div></section><div class="layout"><section class="card"><h2>🗺️ نقشه عملیاتی سالن — انتخاب گیت با کلیک</h2><div class="warehouse"><div class="lane" id="rightGates"></div><div class="floor"><div style="font-size:55px">↕</div><b>مسیر تردد و مانور کامیون‌ها</b><span>محوطه مرکزی انبار</span><span class="tag">نمای شماتیک بر اساس نقشه ارسالی</span></div><div class="lane" id="leftGates"></div></div><p class="note">🟢 آماده | 🟡 انتظار ۱ تا ۲ دقیقه | 🔴 انتظار ۲ دقیقه و بیشتر | 🚚 کامیون مستقر. با نگه داشتن موس روی گیت، تعداد بار و مقصد نمایش داده می‌شود.</p></section><section><div class="card"><h2>🛫 تابلوی زنده وضعیت گیت‌ها</h2><div class="scroll"><table class="board"><thead><tr><th>گیت</th><th>مقصد</th><th>تعداد بار</th><th>زمان انتظار</th><th>وضعیت</th></tr></thead><tbody id="board"></tbody></table></div></div><div class="card" style="margin-top:18px"><h2>⚙️ کنترل گیت انتخاب‌شده</h2><div class="formgrid"><div><label>شماره گیت</label><input id="gateId" readonly></div><div><label>شهر مقصد</label><input id="city" placeholder="مثلاً رشت"></div><div><label>تعداد مرسولات / بار</label><input id="count" type="number" min="0" step="1" placeholder="مثلاً ۲۵۰"></div></div><div class="actions"><button class="primary" id="prepare">📦 آماده بارگیری</button><button class="blue" id="updateLoad">✏️ به‌روزرسانی بار آماده</button><button class="blue" id="arrive">🚚 ورود کامیون / توقف انتظار</button><button id="release">↩️ ثبت خروج کامیون و مانده بار</button></div><div id="remainingBox" style="display:none;margin-top:14px;padding:14px;border:1px solid #426075;border-radius:12px;background:#173348"><label>تعداد مرسولات باقی‌مانده پس از بارگیری و خروج کامیون</label><input type="number" id="remaining" min="0" step="1" placeholder="مثلاً ۲۰۰"><p class="note">مانده بار از تعداد آماده‌شده کسر می‌شود و همراه با بار بارگیری‌شده در تاریخچه ثبت خواهد شد. مانده برای آماده‌سازی نوبت بعدی در همان گیت باقی می‌ماند.</p></div><p class="note" id="selectedInfo">یک گیت را از نقشه انتخاب کنید.</p></div></section></div><div class="bottom"><section class="card"><h2>📋 تاریخچه عملیات و زمان انتظار</h2><div class="scroll"><table class="board"><thead><tr><th>گیت</th><th>مقصد</th><th>بار</th><th>آماده از</th><th>ورود کامیون</th><th>خروج کامیون</th><th>بار اولیه</th><th>بار بارگیری‌شده</th><th>بار باقی‌مانده</th><th>انتظار</th></tr></thead><tbody id="history"></tbody></table></div><div class="actions"><button class="primary" id="export">⬇ خروجی اکسل (CSV)</button></div></section><section class="card"><h2>📊 راهنمای عملیات</h2><p class="note">۱. روی گیت کلیک کنید؛ شهر و تعداد بار را ثبت و «آماده بارگیری» را بزنید. ساعت انتظار بلافاصله شروع می‌شود.</p><p class="note">۲. تا پیش از ورود کامیون، تعداد بار یا شهر را تغییر دهید و «به‌روزرسانی بار آماده» را بزنید؛ زمان‌سنج از ابتدا شروع نمی‌شود. هنگام رسیدن کامیون، «ورود کامیون» را بزنید. انتظار متوقف شده و یک رکورد در تاریخچه ثبت می‌شود.</p><p class="note">۳. بعد از اتمام عملیات، «خروج کامیون و آزادسازی گیت» را بزنید. گیت مجدداً خالی می‌شود.</p><p class="note">۴. پس از خروج کامیون، مانده بار را وارد و ثبت کنید. تاریخچه شامل تعداد آماده، بارگیری‌شده و باقی‌مانده است. اطلاعات در دیتابیس مرکزی Supabase ذخیره می‌شود.</p><p class="note" style="display:none">۴. در همین پنل دریافت درخواست را با «متوجه شدم» تأیید می‌کند. زمان اعلام و زمان عملیات در گزارش ثبت می‌شود. داده‌ها روی همین مرورگر ذخیره می‌شوند. فایل خروجی CSV با Excel باز می‌شود. این نسخه نمایشی است: دو پنل فقط در همین مرورگر داده مشترک دارند؛ برای استفاده هم‌زمان روی دستگاه‌های جداگانه به سرور مرکزی نیاز است.</p><p class="note">توجه: آستانه‌های یک و دو دقیقه برای نمایش عملیاتی هستند و می‌توان آن‌ها را متناسب با SLA عملیاتی تنظیم کرد.</p></section></div></div></main><div class="footer">TIHUB · واحد برنامه‌ریزی عملیات · داشبورد کنترل گیت</div>
+<div id="managerApp">
+ <div class="mhead">
+  <div class="mbrand"><div><strong>TIHUB <span style="font-size:12px;color:#cde2ec">/ MANAGER</span></strong><div class="msmall">واحد برنامه‌ریزی TIHUB</div></div><div style="text-align:left"><div style="color:#39ddb1;font-size:12px">● اطلاعات زنده</div><div id="mClock" class="msmall"></div></div></div>
+  <h2>تابلوی مدیریت صف بارگیری</h2><div class="msmall">پایش ۱۲ گیت · وضعیت حامل · گزارش عملیات</div>
+ </div>
+ <div class="mstats">
+  <div class="mstat"><b id="mLate">۰</b><small>تأخیر بحرانی</small></div>
+  <div class="mstat"><b id="mReady">۰</b><small>منتظر حامل</small></div>
+  <div class="mstat"><b id="mTruck">۰</b><small>کامیون مستقر</small></div>
+ </div>
+ <div id="mAlerts"></div>
+ <div class="msection" id="mBoardSection">
+  <h3>🚚 وضعیت لحظه‌ای گیت‌ها</h3>
+  <div class="mfilters">
+   <button class="on" data-mf="all" onclick="mFilter('all')">همه</button>
+   <button data-mf="late" onclick="mFilter('late')">بحرانی</button>
+   <button data-mf="ready" onclick="mFilter('ready')">منتظر حامل</button>
+   <button data-mf="truck" onclick="mFilter('truck')">کامیون مستقر</button>
+   <button data-mf="empty" onclick="mFilter('empty')">خالی</button>
+  </div>
+  <div id="mRows"></div>
+ </div>
+ <div class="msection" id="mHistorySection" style="display:none">
+  <h3>📋 تاریخچه خروج خودروها</h3>
+  <div id="managerHistory"></div>
+  <button onclick="document.getElementById('export').click()" style="margin-top:12px">⬇ دریافت گزارش CSV</button>
+ </div>
+ <div class="mfoot">
+  <button id="mNavBoard" class="on" onclick="mTab('board')">▤<br>تابلوی گیت‌ها</button>
+  <button id="mNavHistory" onclick="mTab('history')">◷<br>تاریخچه</button>
+  <button onclick="refresh()">↻<br>به‌روزرسانی</button>
+  <button onclick="logout()">⇥<br>خروج</button>
+ </div>
+</div>
+<div id="mDetail" class="mdetail" onclick="if(event.target===this)closeMDetail()">
+ <div class="msheet"><h3 id="mDetailTitle"></h3><div id="mDetailBody"></div><button onclick="closeMDetail()">بستن</button></div>
+</div>
+<div id="toast"></div><div id="loginOverlay"><div class="loginCard"><h2>🚚 ورود به اتاق کنترل گیت‌های TIHUB</h2><p class="note">ورود اپراتور برای ثبت عملیات و ورود مدیر برای مشاهده زنده اطلاعات</p><label>نام کاربری</label><input id="loginRole" autocomplete="username" placeholder="manager یا operator" value="operator"><label>رمز عبور</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="رمز عبور"><div class="actions"><button class="primary" id="loginButton">ورود به سامانه</button></div><div id="statusMessage"></div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
+// فقط کلید عمومی را قرار دهید. رمز یا کلید secret را هرگز در HTML نگذارید.
+const CONFIG={
+ url:'https://bgtvqbdnobjvtsmotkxb.supabase.co',
+ publishableKey:'PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE',
+ // ایمیل حساب‌هایی که قبلاً در Authentication ساخته‌اید؛ فقط برای تبدیل نام کاربری.
+ // این مقادیر در سورس مرورگر قابل مشاهده‌اند، اما رمزها هرگز ذخیره نمی‌شوند.
+ emails:{manager:'bardiaa6@gmail.com',operator:'bardia.arman@gmail.com'}
+};
+const $=id=>document.getElementById(id);
+const client=window.supabase.createClient(CONFIG.url,CONFIG.publishableKey,{auth:{persistSession:true,autoRefreshToken:true}});
+let role='',gates=[],history=[],selected=1,loading=false,channel=null;
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const stamp=x=>x?new Date(x).toLocaleString('fa-IR'):'—';
+const seconds=(a,b)=>a?Math.max(0,Math.floor((new Date(b||Date.now()).getTime()-new Date(a).getTime())/1000)):0;
+const fmt=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',4000)}
+function error(e){toast(e?.message||'خطای ارتباط با سرور')}
+function configured(){return CONFIG.publishableKey.startsWith('sb_publishable_')&&Object.values(CONFIG.emails).every(e=>e.includes('@'))}
+async function logout(){if(channel){await client.removeChannel(channel);channel=null}await client.auth.signOut();role='';document.body.classList.remove('manager-mode');$('loginOverlay').style.display='flex';$('loginPassword').value='';$('roleLabel').textContent=''}
+$('loginButton').onclick=async()=>{
+ try{
+  if(!configured())throw Error('ابتدا کلید عمومی و ایمیل‌های دو حساب را در تنظیمات فایل وارد کنید');
+  const username=$('loginRole').value.trim().toLowerCase();
+  if(!['manager','operator'].includes(username))throw Error('نام کاربری باید manager یا operator باشد');
+  const {data,error:e}=await client.auth.signInWithPassword({email:CONFIG.emails[username],password:$('loginPassword').value});
+  if(e)throw Error('نام کاربری یا رمز عبور صحیح نیست');
+  await establish(data.user,username);
+ }catch(e){$('statusMessage').textContent=e.message}
+};
+$('loginPassword').onkeydown=e=>{if(e.key==='Enter')$('loginButton').click()};
+async function establish(user,requested){
+ const {data,error:e}=await client.from('user_roles').select('username,role').eq('user_id',user.id).single();
+ if(e||!data||data.username!==requested||data.role!==requested){await client.auth.signOut();throw Error('نقش حساب کاربری تأیید نشد')}
+ role=data.role;$('loginOverlay').style.display='none';$('statusMessage').textContent='';$('loginPassword').value='';applyRole();await refresh();
+ if(channel)await client.removeChannel(channel);
+ channel=client.channel('tihub-gates-live').on('postgres_changes',{event:'*',schema:'public',table:'gates'},()=>refresh()).on('postgres_changes',{event:'*',schema:'public',table:'gate_events'},()=>refresh()).subscribe();
+}
+function applyRole(){
+ document.body.classList.toggle('manager-mode',role==='manager');
+ $('roleLabel').textContent=role==='manager'?'نمای مدیر (فقط مشاهده)':'اپراتور انبار';
+ for(let id of ['prepare','updateLoad','arrive','release'])$(id).style.display=role==='manager'?'none':'';
+ document.querySelector('#opsPanel .layout section:nth-child(2) .card:nth-child(2)').style.display=role==='manager'?'none':'';
+}
+function level(g){if(g.status!=='ready')return g.status;let s=seconds(g.started);return s>=120?'danger':s>=60?'warning':'ready'}
+function state(g){return {empty:'خالی',ready:'آماده',warning:'هشدار',danger:'تأخیر',truck:'کامیون مستقر'}[level(g)]||'نامشخص'}
+function choose(id){selected=id;let g=gates.find(x=>x.id===id);if(!g)return;$('gateId').value='G'+id;$('city').value=g.city||'';$('count').value=g.count??'';$('remainingBox').style.display=g.status==='truck'&&role==='operator'?'block':'none';$('remaining').value='';render()}
+function render(){
+ if(!gates.length)return;
+ let ready=gates.filter(g=>g.status==='ready');
+ $('total').textContent=gates.length;$('empty').textContent=gates.filter(g=>g.status==='empty').length;
+ $('ready').textContent=ready.length;$('occupied').textContent=gates.filter(g=>g.status==='truck').length;
+ $('average').textContent=ready.length?fmt(Math.round(ready.reduce((s,g)=>s+seconds(g.started),0)/ready.length)):'۰۰:۰۰';
+ for(let [target,subset] of [['rightGates',gates.slice(0,6)],['leftGates',gates.slice(6)]])$(target).innerHTML=subset.map(g=>`<button class="gate ${level(g)} ${selected===g.id?'selectedGate':''}" onclick="choose(${g.id})" title="مقصد: ${esc(g.city||'—')} | تعداد: ${esc(g.count??'—')}"><span class="number">G${g.id}</span><span class="icon">${g.status==='truck'?'🚚':g.status==='ready'?'📦':'⬚'}</span><span class="caption">${esc(g.city||'گیت '+g.id)}</span><span class="clock">${g.started?fmt(seconds(g.started,g.arrived)):state(g)}</span></button>`).join('');
+ let sorted=[...gates].sort((a,b)=>(b.status==='ready'?seconds(b.started):0)-(a.status==='ready'?seconds(a.started):0)||a.id-b.id);
+ $('board').innerHTML=sorted.map(g=>`<tr class="${level(g)}" onclick="choose(${g.id})" style="cursor:pointer"><td>G${g.id}</td><td>${esc(g.city||'—')}</td><td>${esc(g.count??'—')}</td><td>${g.started?fmt(seconds(g.started,g.arrived)):'—'}</td><td>${state(g)}</td></tr>`).join('');
+ $('history').innerHTML=history.length?history.map(h=>`<tr><td>G${h.gate_id}</td><td>${esc(h.destination)}</td><td>${esc(h.prepared)}</td><td>${stamp(h.ready_at)}</td><td>${stamp(h.arrived_at)}</td><td>${stamp(h.departed_at)}</td><td>${esc(h.prepared)}</td><td>${esc(h.loaded??'—')}</td><td>${esc(h.remaining??'—')}</td><td>${h.arrived_at?fmt(seconds(h.ready_at,h.arrived_at)):'—'}</td></tr>`).join(''):'<tr><td colspan="10">هنوز رویدادی ثبت نشده است.</td></tr>';
+ if(role==='manager')renderManager();
+ $('now').textContent=new Date().toLocaleString('fa-IR');let g=gates.find(x=>x.id===selected)||gates[0];
+ $('selectedInfo').textContent=`وضعیت: ${state(g)} | انتظار: ${g.started?fmt(seconds(g.started,g.arrived)):'—'}`;
+ $('updateLoad').disabled=g.status!=='ready';$('arrive').disabled=g.status!=='ready';$('release').disabled=g.status!=='truck';
+}
+async function refresh(){
+ if(!role||loading)return;loading=true;
+ try{
+  const [gr,hr]=await Promise.all([client.from('gates').select('*').order('id'),client.from('gate_events').select('*').order('id',{ascending:false}).limit(150)]);
+  if(gr.error)throw gr.error;if(hr.error)throw hr.error;
+  gates=gr.data.map(g=>({id:g.id,status:g.status,city:g.destination||'',count:g.parcel_count,started:g.ready_at,arrived:g.loading_started_at}));
+  history=hr.data;render();
+ }catch(e){error(e)}finally{loading=false}
+}
+function readInput(){let city=$('city').value.trim(),count=Number($('count').value);if(!city||$('count').value===''||!Number.isInteger(count)||count<0){toast('مقصد و تعداد صحیح را وارد کنید');return null}return{city,count}}
+async function action(name,params){
+ if(role!=='operator')return toast('دسترسی ثبت عملیات ندارید');
+ try{const {error:e}=await client.rpc(name,params);if(e)throw e;await refresh();choose(selected);toast('اطلاعات در Supabase ثبت شد')}catch(e){error(e)}
+}
+$('prepare').onclick=()=>{let v=readInput();if(v)action('tihub_prepare',{p_gate:selected,p_destination:v.city,p_count:v.count})};
+$('updateLoad').onclick=()=>{let v=readInput(),g=gates.find(x=>x.id===selected);if(v&&g){if(v.city!==g.city)return toast('تغییر شهر در عملیات فعال پشتیبانی نمی‌شود');action('tihub_adjust',{p_gate:selected,p_count:v.count})}};
+$('arrive').onclick=()=>action('tihub_arrive',{p_gate:selected});
+$('release').onclick=()=>{let g=gates.find(x=>x.id===selected),raw=$('remaining').value,n=Number(raw);if(raw===''||!Number.isInteger(n)||n<0||n>g.count)return toast('مانده بار باید بین صفر و بار آماده باشد');action('tihub_depart',{p_gate:selected,p_remaining:n})};
+$('export').onclick=()=>{
+ const cols=['gate_id','destination','prepared','ready_at','arrived_at','departed_at','loaded','remaining'];
+ const rows=[cols,...history.map(h=>cols.map(k=>h[k]??''))];
+ const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='TIHUB_Gate_History.csv';a.click();URL.revokeObjectURL(url)
+};
+
+let managerFilter='all',managerTab='board';
+const mFa=n=>Number(n).toLocaleString('fa-IR');
+const mMinutes=g=>g.started?Math.floor(seconds(g.started,g.arrived)/60):0;
+const mDuration=g=>g.started?fmt(seconds(g.started,g.arrived)):'—';
+function mFilter(f){managerFilter=f;document.querySelectorAll('[data-mf]').forEach(b=>b.classList.toggle('on',b.dataset.mf===f));renderManager()}
+function mTab(t){managerTab=t;$('mBoardSection').style.display=t==='board'?'block':'none';$('mHistorySection').style.display=t==='history'?'block':'none';$('mNavBoard').classList.toggle('on',t==='board');$('mNavHistory').classList.toggle('on',t==='history');renderManager()}
+function closeMDetail(){$('mDetail').classList.remove('show')}
+function mDetails(id){
+ const g=gates.find(x=>x.id===id);if(!g)return;
+ $('mDetailTitle').textContent='گیت '+mFa(id)+' | '+(g.city||'بدون مقصد');
+ $('mDetailBody').innerHTML='وضعیت: '+esc(state(g))+'<br>بار آماده: '+mFa(g.count||0)+' مرسوله<br>مدت انتظار حامل: '+mDuration(g)+'<br>زمان اعلام آمادگی: '+stamp(g.started)+'<br>زمان ورود کامیون: '+stamp(g.arrived);
+ $('mDetail').classList.add('show')
+}
+function renderManager(){
+ if(role!=='manager')return;
+ const ready=gates.filter(g=>g.status==='ready'),trucks=gates.filter(g=>g.status==='truck'),late=ready.filter(g=>mMinutes(g)>=2);
+ $('mLate').textContent=mFa(late.length);$('mReady').textContent=mFa(ready.length);$('mTruck').textContent=mFa(trucks.length);
+ $('mClock').textContent=new Date().toLocaleTimeString('fa-IR');
+ $('mAlerts').innerHTML=late.length?'<div class="malert">🚨 '+mFa(late.length)+' گیت دارای تأخیر بیش از ۲ دقیقه: '+late.map(g=>'گیت '+mFa(g.id)+' ('+esc(g.city)+')').join('، ')+'</div>':'';
+ const rows=gates.filter(g=>managerFilter==='all'||(managerFilter==='late'?g.status==='ready'&&mMinutes(g)>=2:g.status===managerFilter))
+ .sort((a,b)=>(b.status==='ready'?seconds(b.started):0)-(a.status==='ready'?seconds(a.started):0)||a.id-b.id);
+ $('mRows').innerHTML=rows.map(g=>{
+ const late=g.status==='ready'&&mMinutes(g)>=2;
+ const status=g.status==='empty'?'خالی':g.status==='truck'?'در حال بارگیری':late?'بحرانی':'منتظر حامل';
+ return '<div class="mrow '+(late?'late':g.status)+'" onclick="mDetails('+g.id+')"><div class="g">G'+String(g.id).padStart(2,'0')+'</div><div class="city">'+esc(g.city||'بدون مقصد')+'<small>'+mFa(g.count||0)+' مرسوله</small></div><div class="wait">'+mDuration(g)+'<small>زمان انتظار</small></div><div class="state">'+status+'</div></div>';
+ }).join('')||'<div class="mstat">موردی وجود ندارد</div>';
+ $('managerHistory').innerHTML=history.length?history.slice(0,70).map(h=>'<div class="mstat" style="text-align:right;margin-bottom:9px"><b style="font-size:15px">گیت '+mFa(h.gate_id)+' | '+esc(h.destination||'—')+'</b><small>آماده: '+mFa(h.prepared||0)+' · بارگیری: '+mFa(h.loaded||0)+' · مانده: '+mFa(h.remaining||0)+'</small><small>ورود: '+stamp(h.arrived_at)+'<br>خروج: '+stamp(h.departed_at)+'</small></div>').join(''):'هنوز سابقه‌ای ثبت نشده است.';
+}
+
+setInterval(()=>{if(role)render()},1000);setInterval(refresh,10000);
+(async()=>{if(!configured()){$('statusMessage').textContent='ابتدا کلید عمومی و ایمیل دو حساب را در CONFIG فایل وارد کنید';return}const {data}=await client.auth.getUser();if(!data?.user)return;const {data:r}=await client.from('user_roles').select('username,role').eq('user_id',data.user.id).maybeSingle();if(r&&['manager','operator'].includes(r.username)&&r.username===r.role){try{await establish(data.user,r.username)}catch(e){error(e)}}})();
+</script></body></html>
