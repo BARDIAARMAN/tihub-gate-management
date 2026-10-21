@@ -82,12 +82,15 @@ body.manager-mode #managerApp{display:block}
 </div>
 <div id="toast"></div><div id="loginOverlay"><div class="loginCard"><h2>🚚 ورود به اتاق کنترل گیت‌های TIHUB</h2><p class="note">ورود اپراتور برای ثبت عملیات و ورود مدیر برای مشاهده زنده اطلاعات</p><label>نام کاربری</label><input id="loginRole" autocomplete="username" placeholder="manager یا operator" value="operator"><label>رمز عبور</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="رمز عبور"><div class="actions"><button class="primary" id="loginButton">ورود به سامانه</button></div><div id="statusMessage"></div></div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script>
 // فقط کلید عمومی را قرار دهید. رمز یا کلید secret را هرگز در HTML نگذارید.
-const CONFIG={
- url:'https://bgtvqbdnobjvtsmotkxb.supabase.co',
- publishableKey:'PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE',
- // ایمیل حساب‌هایی که قبلاً در Authentication ساخته‌اید؛ فقط برای تبدیل نام کاربری.
- // این مقادیر در سورس مرورگر قابل مشاهده‌اند، اما رمزها هرگز ذخیره نمی‌شوند.
- emails:{manager:'bardiaa6@gmail.com',operator:'bardia.arman@gmail.com'}
+const CONFIG = {
+  url: 'https://bgtvqbdnobjvtsmotkxb.supabase.co',
+
+  publishableKey: 'https://github.com/BARDIAARMAN/tihub-gate-management',
+
+  emails: {
+    manager: 'bardiaa6@gmail.com',
+    operator: 'bardia.arman@gmail.com'
+  }
 };
 const $=id=>document.getElementById(id);
 const client=window.supabase.createClient(CONFIG.url,CONFIG.publishableKey,{auth:{persistSession:true,autoRefreshToken:true}});
